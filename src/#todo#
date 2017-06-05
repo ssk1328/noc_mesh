@@ -1,3 +1,0 @@
-1) In Netconnect, decide which Line Node to send the Packet to using PG algorithm
-
-2) In Node, if dest of Packet matches current address and direction P2L, then change direction to L2P and find the line node it needs to go to.
