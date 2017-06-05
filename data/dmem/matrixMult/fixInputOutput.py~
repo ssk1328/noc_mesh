@@ -1,0 +1,13 @@
+initFileName="dmem_init_"
+dumpFileName="dmem_dump_"
+
+num_core=7
+
+for i in range(num_cores):
+  f1 = open(initFileName+str(i)+".txt".'r')
+  f2 = open(dumpFileName+str(i)+".txt".'r')
+  s1=f1.read()
+  s2=s1.splitlines()
+  s3=f2.read()
+  s4=s3.splitlines()
+

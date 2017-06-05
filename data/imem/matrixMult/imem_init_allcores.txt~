@@ -1,0 +1,169 @@
+Core 0	@0
+Core 0	8fe00000 // LW $0 , 0 ($31)
+Core 0	5c000001 // fifo_write $0 , 1
+Core 0	5c000002 // fifo_write $0 , 2
+Core 0	8fe10001 // LW $1 , 1 ($31)
+Core 0	5c200002 // fifo_write $1 , 2
+Core 0	58400001 // fifo_read $2 , 1
+Core 0	00221821 // MUL $3 , $1 , $2
+Core 0	58800003 // fifo_read $4 , 3
+Core 0	00832820 // ADD $5 , $4 , $3
+Core 0	afe50002 // SW $5 , 2 ($31)
+
+Core 0	8fe70003 // LW $7 , 3 ($31)
+Core 0	5ce00001 // fifo_write $7 , 1
+Core 0	00074021 // MUL $8 , $0 , $7
+Core 0	59200005 // fifo_read $9 , 5
+Core 0	01285020 // ADD $10 , $9 , $8
+Core 0	afea0004 // SW $10 , 4 ($31)
+Core 0	@10
+Core 0	00276021 // MUL $12 , $1 , $7
+Core 0	59a00006 // fifo_read $13 , 6
+Core 0	01ac7020 // ADD $14 , $13 , $12
+Core 0	afee0005 // SW $14 , 5 ($31)
+Core 0	00000000 // Halt
+
+
+Core 1	@0
+Core 1	8fe00000 // LW $0 , 0 ($31)
+Core 1	5c000000 // fifo_write $0 , 0
+Core 1	8fe10001 // LW $1 , 1 ($31)
+Core 1	5c200002 // fifo_write $1 , 2
+Core 1	00201021 // MUL $2 , $1 , $0
+Core 1	58600005 // fifo_read $3 , 5
+Core 1	00622020 // ADD $4 , $3 , $2
+Core 1	afe40002 // SW $4 , 2 ($31)
+
+Core 1	58c00000 // fifo_read $6 , 0
+Core 1	00c03821 // MUL $7 , $6 , $0
+Core 1	59000005 // fifo_read $8 , 5
+Core 1	01074820 // ADD $9 , $8 , $7
+Core 1	afe90003 // SW $9 , 3 ($31)
+Core 1	59600004 // fifo_read $11 , 4
+Core 1	59800006 // fifo_read $12 , 6
+Core 1	016c6820 // ADD $13 , $11 , $12
+Core 1	@10
+Core 1	59c00000 // fifo_read $14 , 0
+Core 1	002e7821 // MUL $15 , $1 , $14
+Core 1	01af8020 // ADD $16 , $13 , $15
+Core 1	aff00004 // SW $16 , 4 ($31)
+Core 1	00000000 // Halt
+
+
+Core 2	@0
+Core 2	8fe00000 // LW $0 , 0 ($31)
+Core 2	58200001 // fifo_read $1 , 1
+Core 2	00201021 // MUL $2 , $1 , $0
+Core 2	58600006 // fifo_read $3 , 6
+Core 2	00622020 // ADD $4 , $3 , $2
+Core 2	afe40001 // SW $4 , 1 ($31)
+
+Core 2	58c00005 // fifo_read $6 , 5
+Core 2	58e00006 // fifo_read $7 , 6
+Core 2	00c74021 // MUL $8 , $6 , $7
+Core 2	59200003 // fifo_read $9 , 3
+Core 2	01285020 // ADD $10 , $9 , $8
+Core 2	59600000 // fifo_read $11 , 0
+Core 2	01606021 // MUL $12 , $11 , $0
+Core 2	014c6820 // ADD $13 , $10 , $12
+Core 2	afed0002 // SW $13 , 2 ($31)
+Core 2	59e00000 // fifo_read $15 , 0
+Core 2	@10
+Core 2	01e08021 // MUL $16 , $15 , $0
+Core 2	5e000004 // fifo_write $16 , 4
+Core 2	00000000 // Halt
+
+
+Core 3	@0
+Core 3	8fe00000 // LW $0 , 0 ($31)
+Core 3	58200004 // fifo_read $1 , 4
+Core 3	00201021 // MUL $2 , $1 , $0
+Core 3	5c400005 // fifo_write $2 , 5
+Core 3	8fe30001 // LW $3 , 1 ($31)
+Core 3	00602021 // MUL $4 , $3 , $0
+Core 3	5c800005 // fifo_write $4 , 5
+Core 3	58a00004 // fifo_read $5 , 4
+Core 3	00a03021 // MUL $6 , $5 , $0
+Core 3	58e00005 // fifo_read $7 , 5
+Core 3	00c74020 // ADD $8 , $6 , $7
+Core 3	5d000000 // fifo_write $8 , 0
+Core 3	59200004 // fifo_read $9 , 4
+Core 3	00695021 // MUL $10 , $3 , $9
+Core 3	5d400005 // fifo_write $10 , 5
+Core 3	59600004 // fifo_read $11 , 4
+Core 3	@10
+Core 3	006b6021 // MUL $12 , $3 , $11
+Core 3	5d800002 // fifo_write $12 , 2
+Core 3	00000000 // Halt
+
+
+Core 4	@0
+Core 4	8fe00000 // LW $0 , 0 ($31)
+Core 4	5c000003 // fifo_write $0 , 3
+Core 4	8fe10001 // LW $1 , 1 ($31)
+Core 4	5c200003 // fifo_write $1 , 3
+Core 4	8fe20002 // LW $2 , 2 ($31)
+Core 4	5c400003 // fifo_write $2 , 3
+Core 4	00021821 // MUL $3 , $0 , $2
+Core 4	5c600001 // fifo_write $3 , 1
+Core 4	00222021 // MUL $4 , $1 , $2
+Core 4	5c800006 // fifo_write $4 , 6
+Core 4	8fe50003 // LW $5 , 3 ($31)
+Core 4	5ca00003 // fifo_write $5 , 3
+Core 4	00053021 // MUL $6 , $0 , $5
+Core 4	5cc00006 // fifo_write $6 , 6
+Core 4	00253821 // MUL $7 , $1 , $5
+Core 4	59000006 // fifo_read $8 , 6
+Core 4	@10
+Core 4	00e84820 // ADD $9 , $7 , $8
+Core 4	59400002 // fifo_read $10 , 2
+
+Core 4	012a5820 // ADD $11 , $9 , $10
+Core 4	afeb0004 // SW $11 , 4 ($31)
+Core 4	00000000 // Halt
+Core 5	@0
+Core 5	8fe00000 // LW $0 , 0 ($31)
+Core 5	58200006 // fifo_read $1 , 6
+Core 5	00201021 // MUL $2 , $1 , $0
+Core 5	58600003 // fifo_read $3 , 3
+Core 5	00622020 // ADD $4 , $3 , $2
+Core 5	5c800001 // fifo_write $4 , 1
+Core 5	8fe50001 // LW $5 , 1 ($31)
+Core 5	5ca00002 // fifo_write $5 , 2
+Core 5	00a03021 // MUL $6 , $5 , $0
+Core 5	58e00003 // fifo_read $7 , 3
+Core 5	00e64020 // ADD $8 , $7 , $6
+Core 5	5d000001 // fifo_write $8 , 1
+Core 5	59200006 // fifo_read $9 , 6
+Core 5	01205021 // MUL $10 , $9 , $0
+Core 5	5d400003 // fifo_write $10 , 3
+Core 5	59600006 // fifo_read $11 , 6
+Core 5	@10
+Core 5	00ab6021 // MUL $12 , $5 , $11
+Core 5	59a00003 // fifo_read $13 , 3
+Core 5	01ac7020 // ADD $14 , $13 , $12
+Core 5	5dc00000 // fifo_write $14 , 0
+Core 5	00000000 // Halt
+Core 6	@0
+Core 6	8fe00000 // LW $0 , 0 ($31)
+Core 6	5c000005 // fifo_write $0 , 5
+Core 6	8fe10001 // LW $1 , 1 ($31)
+Core 6	5c200005 // fifo_write $1 , 5
+Core 6	8fe20002 // LW $2 , 2 ($31)
+Core 6	5c400005 // fifo_write $2 , 5
+Core 6	00021821 // MUL $3 , $0 , $2
+Core 6	5c600001 // fifo_write $3 , 1
+Core 6	00222021 // MUL $4 , $1 , $2
+Core 6	58a00004 // fifo_read $5 , 4
+Core 6	00a43020 // ADD $6 , $5 , $4
+Core 6	5cc00000 // fifo_write $6 , 0
+Core 6	8fe70003 // LW $7 , 3 ($31)
+Core 6	5ce00002 // fifo_write $7 , 2
+Core 6	00074021 // MUL $8 , $0 , $7
+Core 6	59200004 // fifo_read $9 , 4
+Core 6	@10
+Core 6	01285020 // ADD $10 , $9 , $8
+Core 6	5d400002 // fifo_write $10 , 2
+Core 6	00275821 // MUL $11 , $1 , $7
+Core 6	5d600004 // fifo_write $11 , 4
+Core 6	00000000 // Halt

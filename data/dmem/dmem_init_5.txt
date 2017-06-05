@@ -1,0 +1,68 @@
+@0
+00000002 // input = v54
+00000001 // input = v40
+00000001 // input = v37
+00000001 // input = v39
+00000001 // input = v19
+00000001 // input = v18
+00000001 // input = v33
+00000001 // input = v30
+00000000 // output = v61
+00000000 // uninitialised 
+00000000 // uninitialised 
+00000000 // uninitialised 
+00000000 // uninitialised 
+00000000 // uninitialised 
+00000000 // uninitialised 
+00000000 // uninitialised 
+@10
+00000000 // uninitialised 
+00000000 // uninitialised 
+00000000 // uninitialised 
+00000000 // uninitialised 
+00000000 // uninitialised 
+00000000 // uninitialised 
+00000000 // uninitialised 
+00000000 // uninitialised 
+00000000 // uninitialised 
+00000000 // uninitialised 
+00000000 // uninitialised 
+00000000 // uninitialised 
+00000000 // uninitialised 
+00000000 // uninitialised 
+00000000 // uninitialised 
+00000000 // uninitialised 
+@20
+00000000 // uninitialised 
+00000000 // uninitialised 
+00000000 // uninitialised 
+00000000 // uninitialised 
+00000000 // uninitialised 
+00000000 // uninitialised 
+00000000 // uninitialised 
+00000000 // uninitialised 
+00000000 // uninitialised 
+00000000 // uninitialised 
+00000000 // uninitialised 
+00000000 // uninitialised 
+00000000 // uninitialised 
+00000000 // uninitialised 
+00000000 // uninitialised 
+00000000 // uninitialised 
+@30
+00000000 // uninitialised 
+00000000 // uninitialised 
+00000000 // uninitialised 
+00000000 // uninitialised 
+00000000 // uninitialised 
+00000000 // uninitialised 
+00000000 // uninitialised 
+00000000 // uninitialised 
+00000000 // uninitialised 
+00000000 // uninitialised 
+00000000 // uninitialised 
+00000000 // uninitialised 
+00000000 // uninitialised 
+00000000 // uninitialised 
+00000000 // uninitialised 
+00000000 // uninitialised 
