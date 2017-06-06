@@ -46,7 +46,7 @@ endinterface
 (*synthesize*)
 module mkImem#(parameter ProcID procId)( Imem ) ;
 
-  String init_filename = "../data/imem/matrixVectorMult/imem_init_"+toString(procId)+".txt"; 
+  String init_filename = "../data/imem/imem_init_"+toString(procId)+".txt"; 
   RegFile#(Bit#(InstMemBitSz),Bit#(32)) mem <- mkRegFileLoad ( init_filename,0,63);
   
   FIFO#(InstReq)  instReqQ  <- mkFIFO();

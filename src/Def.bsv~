@@ -1,5 +1,3 @@
-import MemTypes::*;
-import ProcTypes::*;
 
 //Number of Nodes
 typedef 7 NumNodes;

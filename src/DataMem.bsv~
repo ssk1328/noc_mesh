@@ -51,7 +51,7 @@ module mkDmem#(parameter ProcID procId)( Dmem ) ;
   
   let dumpFile <- mkReg(InvalidFile) ; //For writing Dump File
   
-  String init_filename = "../data/dmem/matrixVectorMult/dmem_init_"+toString(procId)+".txt"; 
+  String init_filename = "../data/dmem/dmem_init_"+toString(procId)+".txt"; 
   RegFile#(Bit#(DataMemBitSz),Bit#(32)) mem <- mkRegFileLoad ( init_filename,0,63);
   
   FIFO#(DataReq)  dataReqQ <- mkFIFO();

@@ -1,7 +1,2 @@
-Proc: 0,Cycle:  77,Src: 0,Dest: 0,Sent Broadcast
-Proc: 0,Cycle:  91,Src: 1,Dest: 0,Received Broadcast
-Proc: 0,Cycle:  92,Src: 6,Dest: 0,Received Broadcast
-Proc: 0,Cycle:  95,Src: 3,Dest: 0,Received Broadcast
-Proc: 0,Cycle: 109,Src: 2,Dest: 0,Received Broadcast
-Proc: 0,Cycle: 130,Src: 5,Dest: 0,Received Broadcast
-Proc: 0,Cycle: 136,Src: 4,Dest: 0,Received Broadcast
+Proc: 0,Cycle:  77,Src: 0,Dest: 3,Sent
+Proc: 0,Cycle:  82,Src: 0,Dest: 1,Sent

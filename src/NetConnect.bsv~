@@ -32,7 +32,7 @@ import RWire::*;
 import MemTypes::*;
 import ProcTypes::*;
 import Def::*;
-import Lookup::*;
+import Lookup::*
 
 interface NetConnect;
   

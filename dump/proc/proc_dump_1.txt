@@ -1,7 +1,6 @@
-Proc: 1,Cycle:  77,Src: 1,Dest: 1,Sent Broadcast
-Proc: 1,Cycle:  90,Src: 0,Dest: 1,Received Broadcast
-Proc: 1,Cycle:  91,Src: 2,Dest: 1,Received Broadcast
-Proc: 1,Cycle:  93,Src: 4,Dest: 1,Received Broadcast
-Proc: 1,Cycle:  98,Src: 5,Dest: 1,Received Broadcast
-Proc: 1,Cycle: 129,Src: 3,Dest: 1,Received Broadcast
-Proc: 1,Cycle: 135,Src: 6,Dest: 1,Received Broadcast
+Proc: 1,Cycle:  77,Src: 1,Dest: 4,Sent
+Proc: 1,Cycle:  79,Src: 1,Dest: 1,Received Broadcast
+Proc: 1,Cycle:  81,Src: 0,Dest: 1,Received
+Proc: 1,Cycle:  82,Src: 1,Dest: 2,Sent
+Proc: 1,Cycle:  84,Src: 1,Dest: 1,Received Broadcast
+Proc: 1,Cycle:  86,Src: 0,Dest: 1,Received

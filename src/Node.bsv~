@@ -91,7 +91,7 @@ module mkNode#(NoCAddr2D thisRowAddr, NoCAddr2D thisColAddr )(Node);
         channelInQ[i].deq();
         routePacketQ.enq(channelInQ[i].first());
         NoCAddress thisNoCAddr= NoCAddress {rowAddr: thisRowAddr, colAddr: thisColAddr} ;
-//        $display("Packet (%d,%d) with Destination Node %d in direction %s at Node %d",channelInQ[i].first().payload.src,channelInQ[i].first().payload.dest,lookupProcID(channelInQ[i].first().dest),getNoCPacketDir(channelInQ[i].first().nocPacketDirection),lookupProcID(thisNoCAddr));
+        $display("Packet (%d,%d) with Destination Node %d in direction %s at Node %d",channelInQ[i].first().payload.src,channelInQ[i].first().payload.dest,lookupProcID(channelInQ[i].first().dest),getNoCPacketDir(channelInQ[i].first().nocPacketDirection),lookupProcID(thisNoCAddr));
       endrule
     endrules; 
     inputArbitrateRuleSet = rJoinMutuallyExclusive(inputArbitrateRuleSet,nextRule); 
