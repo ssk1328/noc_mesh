@@ -35,6 +35,7 @@ import MemTypes::*;
 import ProcTypes::*;
 import NoCTypes::*;
 import Def::*;
+import Lookup::*
 
 /*
  0 - Home
@@ -101,7 +102,7 @@ module mkNode#(NoCAddr2D thisRowAddr, NoCAddr2D thisColAddr )(Node);
 //Algorithm for routing followed : First the packet is sent horizontally, then vertically
    
   (*mutually_exclusive = "routePacketNorth,routePacketSouth,routePacketWest,routePacketEast,routePacketHome" *)
-
+/*
   rule routePacketNorth (routePacketQ.notEmpty() && ( routePacketQ.first().dest.rowAddr < thisRowAddr ));
     routePacketQ.deq();
     channelOutQ[1].enq(routePacketQ.first());
@@ -126,6 +127,35 @@ module mkNode#(NoCAddr2D thisRowAddr, NoCAddr2D thisColAddr )(Node);
     routePacketQ.deq();
     channelOutQ[0].enq(routePacketQ.first());
   endrule
+*/
+
+
+// Algorithm for routing followed, packet is sent according to the arc plan is supposed to be sent on
+  rule routePacketNorth (routePacketQ.notEmpty() && ( lookupArcDest( thisRowAddr, thisColAddr, routePacketQ.first().arcid ) == "N" ));
+    routePacketQ.deq();
+    channelOutQ[1].enq(routePacketQ.first());
+  endrule
+
+  rule routePacketSouth (routePacketQ.notEmpty() && ( lookupArcDest( thisRowAddr, thisColAddr, routePacketQ.first().arcid ) == "S" ));
+    routePacketQ.deq();
+    channelOutQ[2].enq(routePacketQ.first());
+  endrule
+
+  rule routePacketWest (routePacketQ.notEmpty() && ( lookupArcDest( thisRowAddr, thisColAddr, routePacketQ.first().arcid ) == "W" ));
+    routePacketQ.deq();
+    channelOutQ[4].enq(routePacketQ.first());
+  endrule
+
+  rule routePacketEast (routePacketQ.notEmpty() && ( lookupArcDest( thisRowAddr, thisColAddr, routePacketQ.first().arcid ) == "E" ));
+    routePacketQ.deq();
+    channelOutQ[3].enq(routePacketQ.first());
+  endrule
+
+  rule routePacketHome (routePacketQ.notEmpty() && ( lookupArcDest( thisRowAddr, thisColAddr, routePacketQ.first().arcid ) == "H" ));
+    routePacketQ.deq();
+    channelOutQ[0].enq(routePacketQ.first());
+  endrule
+
 
 /* -----\/----- EXCLUDED -----\/-----
 

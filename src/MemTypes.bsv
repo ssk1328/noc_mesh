@@ -56,16 +56,29 @@ typedef Bit#(2) NoCAddr2D;
 
 typedef struct { NoCAddr2D rowAddr; NoCAddr2D colAddr; } NoCAddress deriving (Eq,Bits);
 
+typedef Bit#(6) NoCArcId;
+
+typedef Int#(32) MeshID;
+
 typedef enum{ P2P, Broadcast } NoCPacketType deriving(Eq,Bits); //Used to determine whether the pacekt is point to point or broadcast
 
 typedef enum{ Point2Line, Line2Point } NoCPacketDirection deriving(Eq,Bits); //Used to determine whether the packet is going from Point to Line or Line to Point
 
+/*
 typedef struct {
   NoCAddress src;
   NoCAddress dest; 
   DataPacket payload;
   NoCPacketType nocPacketType;
   NoCPacketDirection nocPacketDirection; 
+} NoCPacket deriving(Eq, Bits);
+*/
+
+typedef struct {
+  NoCArcId arcid;
+  DataPacket payload;
+//  NoCAddress src;
+//  NoCAddress dest;
 } NoCPacket deriving(Eq, Bits);
 
 

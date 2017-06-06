@@ -53,7 +53,7 @@ module mkCore#(parameter ProcID procId)( Core);
   Imem instMemory         <- mkImem(procId);
   Proc cpu 	          <- mkProc(procId);
   NetConnect cpuToNetwork <- mkNetConnect();
-  PGEmulate netConnectToNetwork <- mkPGEmulate(procId);
+//  PGEmulate netConnectToNetwork <- mkPGEmulate(procId);
   
   mkConnection(cpu.dmem_client,dataMemory.dmem_server);
   mkConnection(cpu.imem_client,instMemory.imem_server);
@@ -61,14 +61,14 @@ module mkCore#(parameter ProcID procId)( Core);
   mkConnection(cpuToNetwork.getDataPacket,cpu.putDataPacket); //network to cpu
   mkConnection(cpu.getDataPacket,cpuToNetwork.putDataPacket); //cpu to network
   
-  mkConnection(netConnectToNetwork.getNetConnectPacket,cpuToNetwork.putNoCPacket);
-  mkConnection(cpuToNetwork.getNoCPacket, netConnectToNetwork.putNetConnectPacket); 
+//  mkConnection(netConnectToNetwork.getNetConnectPacket,cpuToNetwork.putNoCPacket);
+//  mkConnection(cpuToNetwork.getNoCPacket, netConnectToNetwork.putNetConnectPacket); 
   
 //Methods  
-//  interface putNoCPacket = cpuToNetwork.putNoCPacket;
-//  interface getNoCPacket = cpuToNetwork.getNoCPacket;
-  interface putNoCPacket = netConnectToNetwork.putNoCPacket;
-  interface getNoCPacket = netConnectToNetwork.getNoCPacket;
+  interface putNoCPacket = cpuToNetwork.putNoCPacket;
+  interface getNoCPacket = cpuToNetwork.getNoCPacket;
+//  interface putNoCPacket = netConnectToNetwork.putNoCPacket;
+//  interface getNoCPacket = netConnectToNetwork.getNoCPacket;
   interface checkStatus  = cpu.checkStatus; 
   interface dumpMem      = dataMemory.dumpMem;
 endmodule

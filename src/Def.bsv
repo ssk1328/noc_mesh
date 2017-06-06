@@ -1,23 +1,6 @@
-import MemTypes::*;
-import ProcTypes::*;
 
 //Number of Nodes
 typedef 7 NumNodes;
-
-//Hardcoded mapping of Network Nodes to Proccessor Nodes
-
-function NoCAddress lookupNoCAddr(ProcID currProcId);
-  case (currProcId)
-    0: return NoCAddress {rowAddr: 1,colAddr:2};
-    1: return NoCAddress {rowAddr: 1,colAddr:0};
-    2: return NoCAddress {rowAddr: 0,colAddr:2};
-    3: return NoCAddress {rowAddr: 2,colAddr:1};
-    4: return NoCAddress {rowAddr: 1,colAddr:1};
-    5: return NoCAddress {rowAddr: 0,colAddr:0};
-    6: return NoCAddress {rowAddr: 0,colAddr:1};
-    default: return NoCAddress {rowAddr:0,colAddr:0};
-  endcase
-endfunction
 
 function ProcID lookupProcID(NoCAddress currNocAddr);
   return zeroExtend(currNocAddr.rowAddr)*3 + zeroExtend(currNocAddr.colAddr);

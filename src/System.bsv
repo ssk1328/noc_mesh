@@ -81,12 +81,9 @@ module mkSystem(System);
     end
   end
   
-  for (Integer i=0; i< valueOf(NumNodes) ; i=i+1) begin
+  for (Integer core_id=0; core_id < valueOf(NumNodes) ; core_id=core_id+1) begin
     //Connection between the PG network and processors
-    let procNoCAddr = lookupNoCAddr(fromInteger(i));
-    Int#(32) row = unpack(zeroExtend( procNoCAddr.rowAddr));
-    Int#(32) col = unpack(zeroExtend(procNoCAddr.colAddr));
-    Int#(32) nodeIndex = 3*row + col;
+    let nodeIndex = lookupNoCAddr(fromInteger(i));
     mkConnection(cores[i].getNoCPacket, node[nodeIndex].channels[0].putNoCPacket);
     mkConnection(node[nodeIndex].channels[0].getNoCPacket, cores[i].putNoCPacket);
   end

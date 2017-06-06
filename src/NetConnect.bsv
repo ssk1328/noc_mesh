@@ -32,7 +32,7 @@ import RWire::*;
 import MemTypes::*;
 import ProcTypes::*;
 import Def::*;
-
+import Lookup::*
 
 interface NetConnect;
   
@@ -61,6 +61,8 @@ module mkNetConnect(NetConnect);
   rule addLayer ;
     dataPacketInQ.deq();
     let datapacket = dataPacketInQ.first();
+
+/*
     NoCPacketType currPacketType = ?;
     if(datapacket.isBroadcast == True) begin
       currPacketType = Broadcast;
@@ -70,7 +72,10 @@ module mkNetConnect(NetConnect);
     end	       
     
     NoCPacketDirection currPacketDir = Point2Line;
-    nocPacketOutQ.enq( NoCPacket { src: lookupNoCAddr(datapacket.src), dest: lookupNoCAddr(datapacket.dest), payload: datapacket, nocPacketType: currPacketType, nocPacketDirection: currPacketDir} );  
+*/
+
+//    nocPacketOutQ.enq( NoCPacket { src: lookupNoCAddr(datapacket.src), dest: lookupNoCAddr(datapacket.dest), payload: datapacket, nocPacketType: currPacketType, nocPacketDirection: currPacketDir} );  
+    nocPacketOutQ.enq( NoCPacket { arcid: lookupNoCArcId(datapacket.src, datapacket.dest), payload: datapacket} );  
 //    $display( "Packet (%d,%d) Sending at network interface:  %d ",datapacket.src, datapacket.dest,datapacket.src);
   endrule
   
