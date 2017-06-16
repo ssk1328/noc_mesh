@@ -27,39 +27,39 @@ function NoCArcId lookupNoCArcId (ProcID srcProcId, ProcID destProcID) ;
   end
   else if (srcProcId == 1) begin
     if(destProcID == 2) arc_id =  4;
-    if(destProcID == 4) arc_id =  5;
-    if(destProcID == 0) arc_id =  6;
-    if(destProcID == 5) arc_id =  7;
+    else if(destProcID == 4) arc_id =  5;
+    else if(destProcID == 0) arc_id =  6;
+    else if(destProcID == 5) arc_id =  7;
   end
-  if (srcProcId == 5) begin
+  else if (srcProcId == 5) begin
     if(destProcID == 6) arc_id =  20;
-    if(destProcID == 1) arc_id =  21;
-    if(destProcID == 4) arc_id =  22;
-    if(destProcID == 2) arc_id =  23;
+    else if(destProcID == 1) arc_id =  21;
+    else if(destProcID == 4) arc_id =  22;
+    else if(destProcID == 2) arc_id =  23;
   end
-  if (srcProcId == 2) begin
+  else if (srcProcId == 2) begin
     if(destProcID == 3) arc_id =  8;
-    if(destProcID == 5) arc_id =  9;
-    if(destProcID == 1) arc_id =  10;
-    if(destProcID == 6) arc_id =  11;
+    else if(destProcID == 5) arc_id =  9;
+    else if(destProcID == 1) arc_id =  10;
+    else if(destProcID == 6) arc_id =  11;
   end
-  if (srcProcId == 0) begin
+  else if (srcProcId == 0) begin
     if(destProcID == 1) arc_id =  0;
-    if(destProcID == 3) arc_id =  1;
-    if(destProcID == 6) arc_id =  2;
-    if(destProcID == 4) arc_id =  3;
+    else if(destProcID == 3) arc_id =  1;
+    else if(destProcID == 6) arc_id =  2;
+    else if(destProcID == 4) arc_id =  3;
   end
-  if (srcProcId == 6) begin
+  else if (srcProcId == 6) begin
     if(destProcID == 0) arc_id =  24;
-    if(destProcID == 2) arc_id =  25;
-    if(destProcID == 5) arc_id =  26;
-    if(destProcID == 3) arc_id =  27;
+    else if(destProcID == 2) arc_id =  25;
+    else if(destProcID == 5) arc_id =  26;
+    else if(destProcID == 3) arc_id =  27;
   end
-  if (srcProcId == 3) begin
+  else if (srcProcId == 3) begin
     if(destProcID == 4) arc_id =  12;
-    if(destProcID == 6) arc_id =  13;
-    if(destProcID == 2) arc_id =  14;
-    if(destProcID == 0) arc_id =  15;
+    else if(destProcID == 6) arc_id =  13;
+    else if(destProcID == 2) arc_id =  14;
+    else if(destProcID == 0) arc_id =  15;
   end
   else arc_id =  0;
 

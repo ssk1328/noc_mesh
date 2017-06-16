@@ -1,2 +1,8 @@
 Proc: 0,Cycle:  77,Src: 0,Dest: 3,Sent
 Proc: 0,Cycle:  82,Src: 0,Dest: 1,Sent
+Proc: 0,Cycle:  86,Src: 6,Dest: 0,Received
+Proc: 0,Cycle:  87,Src: 4,Dest: 0,Received
+Proc: 0,Cycle: 154,Src: 0,Dest: 4,Sent
+Proc: 0,Cycle: 159,Src: 0,Dest: 6,Sent
+Proc: 0,Cycle: 160,Src: 3,Dest: 0,Received
+Proc: 0,Cycle: 163,Src: 1,Dest: 0,Received
