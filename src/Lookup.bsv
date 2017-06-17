@@ -1,19 +1,6 @@
 import MemTypes::*;
 import ProcTypes::*;
 
-// This is device placement generated from the qap solver used before hardcoded in mcmf.py file right now  
-function MeshID lookupNoCAddr(ProcID currProcId); 
-  case (currProcId)
-    0: return 6; 
-    1: return 3; 
-    2: return 5; 
-    3: return 8; 
-    4: return 1; 
-    5: return 4; 
-    6: return 7; 
-  endcase 
-endfunction 
-
 // Python generated code which returns arc_id for each pair of source and destination of packets 
 
 function NoCArcId lookupNoCArcId (ProcID srcProcId, ProcID destProcID) ;
@@ -170,5 +157,17 @@ function String lookupArcDest ( NoCAddr2D thisRowAddr, NoCAddr2D thisColAddr, No
   return dest_direction;
 endfunction
 
+// This is device placement generated from the qap solver used before hardcoded in mcmf.py file right now  
+function MeshID lookupNoCAddr(ProcID currProcId); 
+  case (currProcId)
+    0: return 6; 
+    1: return 3; 
+    2: return 5; 
+    3: return 8; 
+    4: return 1; 
+    5: return 4; 
+    6: return 7; 
+  endcase 
+endfunction 
 
 
