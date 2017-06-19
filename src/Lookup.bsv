@@ -48,7 +48,7 @@ function NoCArcId lookupNoCArcId(ProcID srcProcId, ProcID destProcID);
     else if(destProcID == 5) arc_id = 26;
     else if(destProcID == 3) arc_id = 27;
   end
-  else arc_id 0;
+  else arc_id = 0;
 
 return arc_id;
 
