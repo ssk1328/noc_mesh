@@ -1,7 +1,7 @@
 Proc: 4,Cycle:  77,Src: 4,Dest: 0,Sent
+Proc: 4,Cycle:  82,Src: 1,Dest: 4,Received
 Proc: 4,Cycle:  82,Src: 4,Dest: 5,Sent
-Proc: 4,Cycle:  84,Src: 1,Dest: 4,Received
-Proc: 4,Cycle:  91,Src: 3,Dest: 4,Received
+Proc: 4,Cycle:  86,Src: 3,Dest: 4,Received
 Proc: 4,Cycle: 154,Src: 4,Dest: 1,Sent
 Proc: 4,Cycle: 159,Src: 4,Dest: 3,Sent
 Proc: 4,Cycle: 162,Src: 0,Dest: 4,Received
