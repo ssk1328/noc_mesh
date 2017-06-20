@@ -4,6 +4,10 @@ import ProcTypes::*;
 //Number of Nodes
 typedef 7 NumNodes;
 
+//Number of packets a 32 bit Register data is split into to form effective 256bit payload
+typedef 8 NumPackets; 
+
+
 function ProcID lookupProcID(NoCAddress currNocAddr);
   return zeroExtend(currNocAddr.rowAddr)*3 + zeroExtend(currNocAddr.colAddr);
 endfunction
@@ -30,3 +34,4 @@ function String getNoCPacketDir(NoCPacketDirection dir);
     default : return "";
   endcase
 endfunction 
+

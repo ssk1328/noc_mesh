@@ -51,7 +51,8 @@ interface Proc;
 endinterface
 
 
-typedef enum { PCgen, Exec, Writeback, ReadFIFO } Stage deriving(Eq,Bits);
+typedef enum { PCgen, Exec, Writeback, ReadFIFO, FIFOWrite} Stage deriving(Eq,Bits);
+
 //For Dump File state
 typedef enum {OpenDump, CanDump, CloseDump, Inactive} DumpStage deriving(Eq,Bits);
 
@@ -168,6 +169,13 @@ module  mkProc#(parameter ProcID procId) ( Proc );
   RFile       rf      <- mkRFile;
   Reg#(Status)  state <- mkReg(Running) ; 
 
+  // ------------------------------------------------------------
+  // FIFOWrite Changes
+  // Counter to count number of packets written to DataPacketOutFQ
+  Reg#(Bit#(3)) FIFOWriteCount <- mkReg(0) ;
+  Reg#(ProcID)  FIFOWriteDestProc <- mkReg(0) ;
+  Reg#(Rindx)   FIFOWriteSrcRindx <- mkReg(0);
+
   //FIFOF for pending FIFORead
   FIFOF#(Instr) pendingFIFORead <- mkSizedFIFOF(valueof(NumNodes));
 
@@ -276,14 +284,18 @@ module  mkProc#(parameter ProcID procId) ( Proc );
         wba( it.rdst, answer[31:0] );      
         // $display ("Inst in Proc %d is Mult executing with result",procId,answer[31:0] );
       end
-     
+    
       // -- FIFO Read and FIFO Write ops ------------------------------
       tagged FIFO_WRITE .it :  begin 
-        dataPacketOutFQ.enq( DataPacket { src:procId, dest:it.destProc, data:rf.rd1(it.rsrc), isBroadcast:False } );
+        // dataPacketOutFQ.enq( DataPacket { src:procId, dest:it.destProc, data:rf.rd1(it.rsrc), isBroadcast:False } );
         dumpFIFOWriteDest <= it.destProc;
         dumpFIFOWrite.enq(P2P);
         // $display( "Packet (%d,%d) Sending at Proc interface:  %d ",procId, it.destProc,procId);
         // $display ("Inst in Proc %d is FIFO_Write executing with written value",procId,rf.rd1(it.rsrc));
+        FIFOWriteCount <= 0 ;
+        FIFOWriteDestProc <= it.destProc ; 
+        FIFOWriteSrcRindx <= it.rsrc ;
+        next_stage <= FIFOWrite ;
       end
 
       tagged FIFO_READ  .it :  begin
@@ -333,6 +345,36 @@ module  mkProc#(parameter ProcID procId) ( Proc );
     stage <= PCgen;
   endrule
 
+  // ------------------------------------------------------------------------------------------------------------------------------------------- //
+  // Rules to specify packets written to output DataPacketOutFQ one after another
+  Rules FIFOwriteRuleSet = emptyRules;
+  for (Integer i = 0; i<valueof(NumPackets); i=i+1) begin 
+    Rules nextRule = rules
+
+      rule FIFOWritePacketi(stage == FIFOWrite && FIFOWriteCount == fromInteger(i) );
+      
+        Payload payload32;
+        payload32.pack_data = rf.rd1(FIFOWriteSrcRindx)[ 4*(FIFOWriteCount)+3 : 4*FIFOWriteCount ] ;
+        payload32.pack_add = FIFOWriteCount ;
+
+        dataPacketOutFQ.enq( DataPacket { src:procId, dest:FIFOWriteDestProc, data:payload32, isBroadcast:False } );
+        // dataPacketOutFQ.enq( DataPacket { src:procId, dest:it.destProc, data:rf.rd1(it.rsrc), isBroadcast:False } );
+        
+      endrule
+
+    endrules; 
+    readFIFORuleSet = rJoinMutuallyExclusive(FIFOwriteRuleSet,nextRule); 
+  end 
+
+  addRules(FIFOwriteRuleSet);
+
+  rule FIFOWriteRuleLast(stage == FIFOWrite && FIFOWriteCount == 7);
+    FIFOWriteCount <= 0;
+    stage <= PCgen;
+  endrule
+
+  // ------------------------------------------------------------------------------------------------------------------------------------------- //
+
   // Rule to specify which FIFOQ to read from . Arbiter used to prevent deq causing implicit conditions of FIFO being notEmpty being enforced on all the queues.
   rule servicePendingFIFORead (pendingFIFORead.notEmpty());
     let pendingInst = pendingFIFORead.first();
@@ -372,7 +414,8 @@ module  mkProc#(parameter ProcID procId) ( Proc );
   end 
 
   addRules(readFIFORuleSet);
-      
+
+  // ------------------------------------------------------------------------------------------------------------------------------------------- //
   // Rule to specify which FIFOQ to fill in. 
   rule deqDataPacketInFQ (dataPacketInFQ.notEmpty());
     let packet = dataPacketInFQ.first();
@@ -406,7 +449,7 @@ module  mkProc#(parameter ProcID procId) ( Proc );
 
       endrule
     endrules; 
-    fillFIFORuleSet = rJoinMutuallyExclusive(fillFIFORuleSet,nextRule); 
+    fillFIFORuleSet = rJoinMutuallyExclusive(fillFIFORuleSet,nextRule);
   end
 
   addRules(fillFIFORuleSet);

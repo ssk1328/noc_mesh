@@ -43,11 +43,21 @@ typedef MemResp#(TagSz,HostDataSz)       HostResp;
 typedef 6  DataMemBitSz ;
 typedef 6  InstMemBitSz ;
 
-typedef struct { 
+typedef Bit#(4) PacketData; // 4bit data carried per 32 bit packet
+typedef Bit#(3) PacketLocation; // 3 bit address specifying location of above 4bit in recosntructed 32 bit data
+typedef Bit#(25) PacketGarbage; // 25 bit garbage
 
+typedef struct {
+  PacketData pack_data;
+  PacketLocation pack_add;
+  PacketGarbage garbage;
+} Payload deriving(Eq,Bits);
+
+typedef struct { 
    ProcID src; 
    ProcID dest; 
-   Bit#(DataSz) data;
+   // Bit#(DataSz) data; 
+   Payload data; 
    Bool isBroadcast; 
 } DataPacket deriving(Eq,Bits);
 
