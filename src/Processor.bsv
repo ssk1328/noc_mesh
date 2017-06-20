@@ -170,11 +170,29 @@ module  mkProc#(parameter ProcID procId) ( Proc );
   Reg#(Status)  state <- mkReg(Running) ; 
 
   // ------------------------------------------------------------
-  // FIFOWrite Changes
+  // FIFO_WRITE ISA instruction changes
   // Counter to count number of packets written to DataPacketOutFQ
-  Reg#(Bit#(3)) FIFOWriteCount <- mkReg(0) ;
+  Reg#(Bit#(4 )) FIFOWriteCount <- mkReg(0) ;
   Reg#(ProcID)  FIFOWriteDestProc <- mkReg(0) ;
   Reg#(Rindx)   FIFOWriteSrcRindx <- mkReg(0);
+
+
+  // -------------------------------------------------------------
+  // FIFO_READ ISA instruction changes
+  // For packets recieved from ith processor
+  // FIFOReadPacketCount[i] counts how many packets have been recieved 
+  // FIFOReadDataReg[i] stores the partial data as DataPackets come in
+  // FIFOReadDestRindx[i] stores the the destination register for packets recieved from here
+
+  Vector#(NumNodes, Reg#(Bit#(4)))  FIFOReadPacketCount;
+  Vector#(NumNodes, Reg#(Bit#(32))) FIFOReadDataReg;
+  Vector#(NumNodes, Reg#(Rindx))    FIFOReadDestRindx;
+
+  for(Integer i=0;i<valueof(NumNodes);i=i+1) begin 
+    FIFOReadPacketCount[i] <- mkReg(0);
+    FIFOReadDataReg[i] <- mkReg(0);
+    FIFOReadDestRindx[i] <- mkReg(0);
+  end
 
   //FIFOF for pending FIFORead
   FIFOF#(Instr) pendingFIFORead <- mkSizedFIFOF(valueof(NumNodes));
@@ -346,16 +364,18 @@ module  mkProc#(parameter ProcID procId) ( Proc );
   endrule
 
   // ------------------------------------------------------------------------------------------------------------------------------------------- //
-  // Rules to specify packets written to output DataPacketOutFQ one after another
+  // Rules to specify packets written to output DataPacketOutFQ one after another as a part of FIFO_WRITE Instruction
+  // Added for updated FIFO_WRITE Instruction  
   Rules FIFOwriteRuleSet = emptyRules;
   for (Integer i = 0; i<valueof(NumPackets); i=i+1) begin 
     Rules nextRule = rules
 
       rule FIFOWritePacketi(stage == FIFOWrite && FIFOWriteCount == fromInteger(i) );
-      
+
         Payload payload32;
         payload32.pack_data = rf.rd1(FIFOWriteSrcRindx)[ 4*(FIFOWriteCount)+3 : 4*FIFOWriteCount ] ;
         payload32.pack_add = FIFOWriteCount ;
+        FIFOWriteCount <= FIFOWriteCount+1 ;
 
         dataPacketOutFQ.enq( DataPacket { src:procId, dest:FIFOWriteDestProc, data:payload32, isBroadcast:False } );
         // dataPacketOutFQ.enq( DataPacket { src:procId, dest:it.destProc, data:rf.rd1(it.rsrc), isBroadcast:False } );
@@ -374,7 +394,6 @@ module  mkProc#(parameter ProcID procId) ( Proc );
   endrule
 
   // ------------------------------------------------------------------------------------------------------------------------------------------- //
-
   // Rule to specify which FIFOQ to read from . Arbiter used to prevent deq causing implicit conditions of FIFO being notEmpty being enforced on all the queues.
   rule servicePendingFIFORead (pendingFIFORead.notEmpty());
     let pendingInst = pendingFIFORead.first();
@@ -397,16 +416,25 @@ module  mkProc#(parameter ProcID procId) ( Proc );
   for (Integer i=0; i<valueof(NumNodes); i=i+1) begin 
     Rules nextRule = rules
 
-    	rule readFromFIFOi(stage == ReadFIFO && readFIFOArbiter.clients[i].grant);
+      rule readFromFIFOi(stage == ReadFIFO && readFIFOArbiter.clients[i].grant);
+
+        // wba( regDest, readDataPacket.data);
+        // stage <= PCgen;
+
         let regDest = case ( pendingFIFORead.first() ) matches
           tagged FIFO_READ            .it: return it.rdst;
           tagged FIFO_READ_BROADCAST  .it: return it.rdst;
         endcase;
+
         pendingFIFORead.deq();
         dataPacketInQ[i].deq();
         DataPacket readDataPacket = dataPacketInQ[i].first();
-        wba( regDest, readDataPacket.data);
-        stage <= PCgen;
+        FIFOReadDestRindx[i] <= regDest;
+        FIFOReadPacketCount[i] <= FIFOReadPacketCount+1 ;
+
+        let regloc = readDataPacket.data.pack_add;
+        FIFOReadDataReg[i][regloc*4+3 : regloc*4] = readDataPacket.data.pack_data ;
+        
       endrule
 
     endrules; 
@@ -415,15 +443,37 @@ module  mkProc#(parameter ProcID procId) ( Proc );
 
   addRules(readFIFORuleSet);
 
+
+
+  // ------------------------------------------------------------------------------------------------------------------------------------------- //
+  // Set of rules to specify whenever a DataReg is full
+  // Added for updated FIFO_READ Instruction
+  Rules FIFOreadRuleSet = emptyRules;
+  for (Integer i=0; i<valueof(NumNodes); i=i+1) begin
+    Rules nextRule = rules;
+      rule FIFOtoDataRegi(stage == ReadFIFO && FIFOReadPacketCount[i]==8);
+
+        FIFOReadPacketCount[i] <= 0 ;
+        wba( FIFOReadDestRindx[i], FIFOReadDataReg[i]);
+        stage <= PCgen;
+ 
+      endrule
+    endrules
+    FIFOreadRuleSet = rJoinMutuallyExclusive(FIFOreadRuleSet, nextRule);
+  end
+  addRules(FIFOreadRuleSet);
+
+
   // ------------------------------------------------------------------------------------------------------------------------------------------- //
   // Rule to specify which FIFOQ to fill in. 
+
   rule deqDataPacketInFQ (dataPacketInFQ.notEmpty());
     let packet = dataPacketInFQ.first();
     if(packet.isBroadcast == False)
       fillFIFOArbiter.clients[packet.src].request;      
     else 
       fillFIFOArbiter.clients[procId].request; // Broadcast Packet needs to be sent to ProcId Queue. We are using that as the Broadcast Read Queue since that is vacant anyway.
-  endrule      
+  endrule
 
   Rules fillFIFORuleSet = emptyRules; 
 
