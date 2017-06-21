@@ -9,7 +9,7 @@
 *.o
 *.obj
 *.bo
-*.ba 
+*.ba
 
 # Precompiled Headers
 *.gch
