@@ -161,7 +161,6 @@ module  mkProc#(parameter ProcID procId) ( Proc );
 
   //-----------------------------------------------------------
   // State
-
   // Standard processor state
 
   Reg#(Addr)  pc      <- mkReg(0);
@@ -171,27 +170,26 @@ module  mkProc#(parameter ProcID procId) ( Proc );
 
   // ------------------------------------------------------------
   // FIFO_WRITE ISA instruction changes
-  // Counter to count number of packets written to DataPacketOutFQ
-  Reg#(Bit#(4 )) FIFOWriteCount <- mkReg(0) ;
-  Reg#(ProcID)  FIFOWriteDestProc <- mkReg(0) ;
-  Reg#(Rindx)   FIFOWriteSrcRindx <- mkReg(0);
+  Reg#(Bit#(4 )) fifoWriteCount <- mkReg(0);      // Counter to count number of packets already sent
+  Reg#(ProcID)  fifoWriteDestProc <- mkReg(0);    // Store dest proc when in exec stage
+  Reg#(Rindx)   fifoWriteSrcRindx <- mkReg(0);    // Store the the source Register file index
 
 
   // -------------------------------------------------------------
   // FIFO_READ ISA instruction changes
   // For packets recieved from ith processor
-  // FIFOReadPacketCount[i] counts how many packets have been recieved 
-  // FIFOReadDataReg[i] stores the partial data as DataPackets come in
-  // FIFOReadDestRindx[i] stores the the destination register for packets recieved from here
+  // fifoReadPacketCount[i] counts how many packets have been recieved 
+  // fifoReadDataReg[i] stores the partial data as DataPackets come in
+  // fifoReadDestRindx[i] stores the the destination register for packets recieved from here
 
-  Vector#(NumNodes, Reg#(Bit#(4)))  FIFOReadPacketCount;
-  Vector#(NumNodes, Reg#(Bit#(32))) FIFOReadDataReg;
-  Vector#(NumNodes, Reg#(Rindx))    FIFOReadDestRindx;
+  Vector#(NumNodes, Reg#(Bit#(4)))  fifoReadPacketCount;
+  Vector#(NumNodes, Reg#(Bit#(32))) fifoReadDataReg;
+  Vector#(NumNodes, Reg#(Rindx))    fifoReadDestRindx;
 
   for(Integer i=0;i<valueof(NumNodes);i=i+1) begin 
-    FIFOReadPacketCount[i] <- mkReg(0);
-    FIFOReadDataReg[i] <- mkReg(0);
-    FIFOReadDestRindx[i] <- mkReg(0);
+    fifoReadPacketCount[i] <- mkReg(0);
+    fifoReadDataReg[i] <- mkReg(0);
+    fifoReadDestRindx[i] <- mkReg(0);
   end
 
   //FIFOF for pending FIFORead
@@ -310,9 +308,9 @@ module  mkProc#(parameter ProcID procId) ( Proc );
         dumpFIFOWrite.enq(P2P);
         // $display( "Packet (%d,%d) Sending at Proc interface:  %d ",procId, it.destProc,procId);
         // $display ("Inst in Proc %d is FIFO_Write executing with written value",procId,rf.rd1(it.rsrc));
-        FIFOWriteCount <= 0 ;
-        FIFOWriteDestProc <= it.destProc ; 
-        FIFOWriteSrcRindx <= it.rsrc ;
+        fifoWriteCount <= 0 ;
+        fifoWriteDestProc <= it.destProc ; 
+        fifoWriteSrcRindx <= it.rsrc ;
         next_stage <= FIFOWrite ;
       end
 
@@ -332,7 +330,7 @@ module  mkProc#(parameter ProcID procId) ( Proc );
       end
   
       tagged FIFO_READ_BROADCAST  .it :  begin
-        pendingFIFORead.enq(inst);
+        pendingFIFORead.enq(inst); 
         next_stage = ReadFIFO;
       end
   
@@ -370,14 +368,14 @@ module  mkProc#(parameter ProcID procId) ( Proc );
   for (Integer i = 0; i<valueof(NumPackets); i=i+1) begin 
     Rules nextRule = rules
 
-      rule FIFOWritePacketi(stage == FIFOWrite && FIFOWriteCount == fromInteger(i) );
+      rule FIFOWritePacketi(stage == FIFOWrite && fifoWriteCount == fromInteger(i) );
 
         Payload payload32;
-        payload32.pack_data = rf.rd1(FIFOWriteSrcRindx)[ 4*(FIFOWriteCount)+3 : 4*FIFOWriteCount ] ;
-        payload32.pack_add = FIFOWriteCount ;
-        FIFOWriteCount <= FIFOWriteCount+1 ;
+        payload32.pack_data = rf.rd1(fifoWriteSrcRindx)[ 4*(fifoWriteCount)+3 : 4*fifoWriteCount ] ;
+        payload32.pack_add = fifoWriteCount ;
+        fifoWriteCount <= fifoWriteCount+1 ;
 
-        dataPacketOutFQ.enq( DataPacket { src:procId, dest:FIFOWriteDestProc, data:payload32, isBroadcast:False } );
+        dataPacketOutFQ.enq( DataPacket { src:procId, dest:fifoWriteDestProc, data:payload32, isBroadcast:False } );
         // dataPacketOutFQ.enq( DataPacket { src:procId, dest:it.destProc, data:rf.rd1(it.rsrc), isBroadcast:False } );
         
       endrule
@@ -388,8 +386,8 @@ module  mkProc#(parameter ProcID procId) ( Proc );
 
   addRules(FIFOwriteRuleSet);
 
-  rule FIFOWriteRuleLast(stage == FIFOWrite && FIFOWriteCount == 7);
-    FIFOWriteCount <= 0;
+  rule FIFOWriteRuleLast(stage == FIFOWrite && fifoWriteCount == 7);
+    fifoWriteCount <= 0;
     stage <= PCgen;
   endrule
 
@@ -429,11 +427,11 @@ module  mkProc#(parameter ProcID procId) ( Proc );
         pendingFIFORead.deq();
         dataPacketInQ[i].deq();
         DataPacket readDataPacket = dataPacketInQ[i].first();
-        FIFOReadDestRindx[i] <= regDest;
-        FIFOReadPacketCount[i] <= FIFOReadPacketCount+1 ;
+        fifoReadDestRindx[i] <= regDest;
+        fifoReadPacketCount[i] <= fifoReadPacketCount+1 ;
 
         let regloc = readDataPacket.data.pack_add;
-        FIFOReadDataReg[i][regloc*4+3 : regloc*4] = readDataPacket.data.pack_data ;
+        fifoReadDataReg[i][regloc*4+3 : regloc*4] = readDataPacket.data.pack_data ;
         
       endrule
 
@@ -451,10 +449,10 @@ module  mkProc#(parameter ProcID procId) ( Proc );
   Rules FIFOreadRuleSet = emptyRules;
   for (Integer i=0; i<valueof(NumNodes); i=i+1) begin
     Rules nextRule = rules;
-      rule FIFOtoDataRegi(stage == ReadFIFO && FIFOReadPacketCount[i]==8);
+      rule FIFOtoDataRegi(stage == ReadFIFO && fifoReadPacketCount[i]==8);
 
-        FIFOReadPacketCount[i] <= 0 ;
-        wba( FIFOReadDestRindx[i], FIFOReadDataReg[i]);
+        fifoReadPacketCount[i] <= 0 ;
+        wba( fifoReadDestRindx[i], fifoReadDataReg[i]);
         stage <= PCgen;
  
       endrule
