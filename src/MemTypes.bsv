@@ -44,8 +44,8 @@ typedef 6  DataMemBitSz ;
 typedef 6  InstMemBitSz ;
 
 typedef Bit#(4) PacketData; // 4bit data carried per 32 bit packet
-typedef Bit#(3) PacketLocation; // 3 bit address specifying location of above 4bit in recosntructed 32 bit data
-typedef Bit#(25) PacketGarbage; // 25 bit garbage
+typedef Bit#(4) PacketLocation; // 3 bit address specifying location of above 4bit in recosntructed 32 bit data
+typedef Bit#(24) PacketGarbage; // 25 bit garbage
 
 typedef struct {
   PacketData pack_data;

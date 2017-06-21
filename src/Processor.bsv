@@ -170,7 +170,7 @@ module  mkProc#(parameter ProcID procId) ( Proc );
 
   // ------------------------------------------------------------
   // FIFO_WRITE ISA instruction changes
-  Reg#(Bit#(4 )) fifoWriteCount <- mkReg(0);      // Counter to count number of packets already sent
+  Reg#(Bit#(4)) fifoWriteCount <- mkReg(0);      // Counter to count number of packets already sent
   Reg#(ProcID)  fifoWriteDestProc <- mkReg(0);    // Store dest proc when in exec stage
   Reg#(Rindx)   fifoWriteSrcRindx <- mkReg(0);    // Store the the source Register file index
 
@@ -311,7 +311,7 @@ module  mkProc#(parameter ProcID procId) ( Proc );
         fifoWriteCount <= 0 ;
         fifoWriteDestProc <= it.destProc ; 
         fifoWriteSrcRindx <= it.rsrc ;
-        next_stage <= FIFOWrite ;
+        next_stage = FIFOWrite;
       end
 
       tagged FIFO_READ  .it :  begin
@@ -319,6 +319,7 @@ module  mkProc#(parameter ProcID procId) ( Proc );
         pendingFIFORead.enq(inst);
         next_stage = ReadFIFO;
       end
+	  /* -----\/----- EXCLUDED -----\/-----
 
       // -- For implementing Broadcast in the FIFO Read and FIFO Write --------------------
       tagged FIFO_WRITE_BROADCAST .it :  begin 
@@ -333,6 +334,8 @@ module  mkProc#(parameter ProcID procId) ( Proc );
         pendingFIFORead.enq(inst); 
         next_stage = ReadFIFO;
       end
+
+	   -----/\----- EXCLUDED -----/\----- */
   
       tagged HALT .it : begin
         next_pc = pc;
@@ -364,32 +367,38 @@ module  mkProc#(parameter ProcID procId) ( Proc );
   // ------------------------------------------------------------------------------------------------------------------------------------------- //
   // Rules to specify packets written to output DataPacketOutFQ one after another as a part of FIFO_WRITE Instruction
   // Added for updated FIFO_WRITE Instruction  
-  Rules FIFOwriteRuleSet = emptyRules;
+  Rules fifoWriteRuleSet = emptyRules;
   for (Integer i = 0; i<valueof(NumPackets); i=i+1) begin 
     Rules nextRule = rules
 
-      rule FIFOWritePacketi(stage == FIFOWrite && fifoWriteCount == fromInteger(i) );
+      rule fifoWritePacketi(stage == FIFOWrite && fifoWriteCount == fromInteger(i) );
 
-        Payload payload32;
+        Payload payload32 = ?;
         payload32.pack_data = rf.rd1(fifoWriteSrcRindx)[ 4*(fifoWriteCount)+3 : 4*fifoWriteCount ] ;
         payload32.pack_add = fifoWriteCount ;
-        fifoWriteCount <= fifoWriteCount+1 ;
 
         dataPacketOutFQ.enq( DataPacket { src:procId, dest:fifoWriteDestProc, data:payload32, isBroadcast:False } );
         // dataPacketOutFQ.enq( DataPacket { src:procId, dest:it.destProc, data:rf.rd1(it.rsrc), isBroadcast:False } );
+		
+		if (fifoWriteCount == 7) begin
+			fifoWriteCount <= 0;
+			stage <= PCgen;
+		end
+		else begin
+        	fifoWriteCount <= fifoWriteCount+1 ;
+			stage <= FIFOWrite;
+		end
         
       endrule
 
     endrules; 
-    readFIFORuleSet = rJoinMutuallyExclusive(FIFOwriteRuleSet,nextRule); 
+    fifoWriteRuleSet = rJoinMutuallyExclusive(fifoWriteRuleSet,nextRule); 
   end 
 
-  addRules(FIFOwriteRuleSet);
+  addRules(fifoWriteRuleSet);
 
-  rule FIFOWriteRuleLast(stage == FIFOWrite && fifoWriteCount == 7);
-    fifoWriteCount <= 0;
-    stage <= PCgen;
-  endrule
+	//  rule fifoWriteRuleLast(stage == FIFOWrite && fifoWriteCount == fromInteger(7) );
+	//  endrule
 
   // ------------------------------------------------------------------------------------------------------------------------------------------- //
   // Rule to specify which FIFOQ to read from . Arbiter used to prevent deq causing implicit conditions of FIFO being notEmpty being enforced on all the queues.
@@ -428,10 +437,11 @@ module  mkProc#(parameter ProcID procId) ( Proc );
         dataPacketInQ[i].deq();
         DataPacket readDataPacket = dataPacketInQ[i].first();
         fifoReadDestRindx[i] <= regDest;
-        fifoReadPacketCount[i] <= fifoReadPacketCount+1 ;
+        fifoReadPacketCount[i] <= fifoReadPacketCount[i]+1 ;
 
         let regloc = readDataPacket.data.pack_add;
-        fifoReadDataReg[i][regloc*4+3 : regloc*4] = readDataPacket.data.pack_data ;
+//        fifoReadDataReg[i][regloc*4+3 : regloc*4] <= readDataPacket.data.pack_data ;
+        fifoReadDataReg[i][3 : 0] <= readDataPacket.data.pack_data ;
         
       endrule
 
@@ -446,20 +456,20 @@ module  mkProc#(parameter ProcID procId) ( Proc );
   // ------------------------------------------------------------------------------------------------------------------------------------------- //
   // Set of rules to specify whenever a DataReg is full
   // Added for updated FIFO_READ Instruction
-  Rules FIFOreadRuleSet = emptyRules;
+  Rules fifoReadRuleSet = emptyRules;
   for (Integer i=0; i<valueof(NumNodes); i=i+1) begin
-    Rules nextRule = rules;
-      rule FIFOtoDataRegi(stage == ReadFIFO && fifoReadPacketCount[i]==8);
+    Rules nextRule = rules
+      rule fifotoDataRegi(stage == ReadFIFO && fifoReadPacketCount[i] == 8);
 
         fifoReadPacketCount[i] <= 0 ;
         wba( fifoReadDestRindx[i], fifoReadDataReg[i]);
         stage <= PCgen;
  
       endrule
-    endrules
-    FIFOreadRuleSet = rJoinMutuallyExclusive(FIFOreadRuleSet, nextRule);
+    endrules;
+    fifoReadRuleSet = rJoinMutuallyExclusive(fifoReadRuleSet, nextRule);
   end
-  addRules(FIFOreadRuleSet);
+  addRules(fifoReadRuleSet);
 
 
   // ------------------------------------------------------------------------------------------------------------------------------------------- //
