@@ -75,8 +75,11 @@ module mkNetConnect(NetConnect);
 */
 
 //    nocPacketOutQ.enq( NoCPacket { src: lookupNoCAddr(datapacket.src), dest: lookupNoCAddr(datapacket.dest), payload: datapacket, nocPacketType: currPacketType, nocPacketDirection: currPacketDir} );  
-    nocPacketOutQ.enq( NoCPacket { arcid: lookupNoCArcId(datapacket.src, datapacket.dest), payload: datapacket} );  
-    $display( "Packet (%d,%d) Sending at network interface:  %d, alloted arc_id is %d ",datapacket.src, datapacket.dest, datapacket.src, lookupNoCArcId(datapacket.src, datapacket.dest) );
+
+    NoCArcId arc_id_netcon = lookupNoCArcId(datapacket.src, datapacket.dest, datapacket.data.pack_add);
+    nocPacketOutQ.enq( NoCPacket { arcid: arc_id_netcon, payload: datapacket} );  
+
+    $display( "Packet (%d,%d) Sending at network interface:  %d, alloted arc_id is %d ",datapacket.src, datapacket.dest, datapacket.src, arc_id_netcon );
 
   endrule
   
