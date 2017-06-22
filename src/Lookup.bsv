@@ -151,7 +151,7 @@ function String lookupArcDest ( NoCAddr2D thisRowAddr, NoCAddr2D thisColAddr, No
     if (arc_index == 0) dest_direction = "N"  ;
     if (arc_index == 1) dest_direction = "E"  ;
     if (arc_index == 2) dest_direction = "E"  ;
-    if (arc_index == 3) dest_direction = "E"  ;
+    if (arc_index == 3) dest_direction = "N"  ;
     if (arc_index == 6) dest_direction = "H"  ;
     if (arc_index == 15) dest_direction = "H"  ;
     if (arc_index == 17) dest_direction = "H"  ;
@@ -159,7 +159,8 @@ function String lookupArcDest ( NoCAddr2D thisRowAddr, NoCAddr2D thisColAddr, No
   end 
   if ((thisRowAddr == 1) && (thisColAddr == 0)) begin 
     if (arc_index == 0) dest_direction = "H"  ;
-    if (arc_index == 4) dest_direction = "E"  ;
+    if (arc_index == 3) dest_direction = "N"  ;
+    if (arc_index == 4) dest_direction = "N"  ;
     if (arc_index == 5) dest_direction = "E"  ;
     if (arc_index == 6) dest_direction = "S"  ;
     if (arc_index == 7) dest_direction = "E"  ;
@@ -181,11 +182,10 @@ function String lookupArcDest ( NoCAddr2D thisRowAddr, NoCAddr2D thisColAddr, No
   if ((thisRowAddr == 2) && (thisColAddr == 1)) begin 
     if (arc_index == 1) dest_direction = "H"  ;
     if (arc_index == 2) dest_direction = "E"  ;
-    if (arc_index == 3) dest_direction = "N"  ;
     if (arc_index == 8) dest_direction = "H"  ;
     if (arc_index == 12) dest_direction = "N"  ;
     if (arc_index == 13) dest_direction = "E"  ;
-    if (arc_index == 14) dest_direction = "E"  ;
+    if (arc_index == 14) dest_direction = "N"  ;
     if (arc_index == 15) dest_direction = "W"  ;
     if (arc_index == 18) dest_direction = "H"  ;
     if (arc_index == 24) dest_direction = "W"  ;
@@ -193,24 +193,22 @@ function String lookupArcDest ( NoCAddr2D thisRowAddr, NoCAddr2D thisColAddr, No
   end 
   if ((thisRowAddr == 1) && (thisColAddr == 1)) begin 
     if (arc_index == 3) dest_direction = "H"  ;
-    if (arc_index == 4) dest_direction = "E"  ;
     if (arc_index == 5) dest_direction = "H"  ;
     if (arc_index == 7) dest_direction = "E"  ;
     if (arc_index == 8) dest_direction = "S"  ;
     if (arc_index == 12) dest_direction = "H"  ;
+    if (arc_index == 14) dest_direction = "N"  ;
     if (arc_index == 16) dest_direction = "E"  ;
     if (arc_index == 17) dest_direction = "W"  ;
     if (arc_index == 18) dest_direction = "S"  ;
     if (arc_index == 19) dest_direction = "W"  ;
-    if (arc_index == 21) dest_direction = "W"  ;
+    if (arc_index == 21) dest_direction = "N"  ;
     if (arc_index == 22) dest_direction = "H"  ;
   end 
   if ((thisRowAddr == 1) && (thisColAddr == 2)) begin 
-    if (arc_index == 4) dest_direction = "N"  ;
     if (arc_index == 7) dest_direction = "H"  ;
     if (arc_index == 9) dest_direction = "H"  ;
     if (arc_index == 11) dest_direction = "S"  ;
-    if (arc_index == 14) dest_direction = "N"  ;
     if (arc_index == 16) dest_direction = "H"  ;
     if (arc_index == 20) dest_direction = "S"  ;
     if (arc_index == 21) dest_direction = "W"  ;
@@ -223,7 +221,6 @@ function String lookupArcDest ( NoCAddr2D thisRowAddr, NoCAddr2D thisColAddr, No
     if (arc_index == 2) dest_direction = "H"  ;
     if (arc_index == 11) dest_direction = "H"  ;
     if (arc_index == 13) dest_direction = "H"  ;
-    if (arc_index == 14) dest_direction = "N"  ;
     if (arc_index == 20) dest_direction = "H"  ;
     if (arc_index == 24) dest_direction = "W"  ;
     if (arc_index == 25) dest_direction = "N"  ;
@@ -231,11 +228,18 @@ function String lookupArcDest ( NoCAddr2D thisRowAddr, NoCAddr2D thisColAddr, No
     if (arc_index == 27) dest_direction = "W"  ;
   end 
   if ((thisRowAddr == 0) && (thisColAddr == 0)) begin 
+    if (arc_index == 3) dest_direction = "E"  ;
+    if (arc_index == 4) dest_direction = "E"  ;
     if (arc_index == 10) dest_direction = "S"  ;
+    if (arc_index == 21) dest_direction = "S"  ;
   end 
   if ((thisRowAddr == 0) && (thisColAddr == 1)) begin 
+    if (arc_index == 3) dest_direction = "S"  ;
+    if (arc_index == 4) dest_direction = "E"  ;
     if (arc_index == 8) dest_direction = "S"  ;
     if (arc_index == 10) dest_direction = "W"  ;
+    if (arc_index == 14) dest_direction = "E"  ;
+    if (arc_index == 21) dest_direction = "W"  ;
   end 
   return dest_direction;
 endfunction
@@ -253,3 +257,4 @@ function MeshID lookupNoCAddr(ProcID currProcId);
     6: return 8; 
   endcase 
 endfunction 
+
