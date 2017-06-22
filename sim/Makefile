@@ -3,6 +3,8 @@
 
 default: full_clean compile link simulate
 
+do: compile link simulate
+
 .PHONY: compile
 compile:
 	@echo Compiling...

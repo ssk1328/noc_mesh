@@ -215,10 +215,10 @@ module  mkProc#(parameter ProcID procId) ( Proc );
   Vector#(NumNodes, FIFO#(DataPacket)) dataPacketInQ;
 
   for(Integer i=0;i<valueof(NumNodes);i=i+1) begin 
-      dataPacketInQ[i]  <- mkFIFO();
+      dataPacketInQ[i]  <- mkSizedFIFO(valueof(NumPackets));
   end
 
-  FIFOF#(DataPacket) dataPacketInFQ  <- mkBypassFIFOF();
+  FIFOF#(DataPacket) dataPacketInFQ  <- mkSizedBypassFIFOF(valueof(NumPackets));
   FIFOF#(DataPacket) dataPacketOutFQ <- mkBypassFIFOF();
 
   // Arbiters for FIFO Operations
@@ -431,19 +431,23 @@ module  mkProc#(parameter ProcID procId) ( Proc );
           tagged FIFO_READ_BROADCAST  .it: return it.rdst;
         endcase;
 
-        pendingFIFORead.deq();
-
         dataPacketInQ[i].deq();
         DataPacket readDataPacket = dataPacketInQ[i].first();
 
         fifoReadDestRindx[i] <= regDest;
+    	
+		$display( "Packet (%d,%d) In FIFO_READ Instruction: reading from %d, Packet count is %d loc is %d ", readDataPacket.src, readDataPacket.dest, i, fifoReadPacketCount[i], readDataPacket.data.pack_add);
 
 		if (fifoReadPacketCount[i] == 7) begin
+			$display("In Proc %d, ifpartloop ", procId);
 		    fifoReadPacketCount[i] <= 0 ;
 		    wba( fifoReadDestRindx[i], fifoReadDataReg[i]);
 		    stage <= PCgen;
+        	pendingFIFORead.deq();
+
 		end
 		else begin
+			$display("In Proc %d, elsepartloop ", procId );
         	fifoReadPacketCount[i] <= fifoReadPacketCount[i]+1 ;
         	fifoReadDataReg[i][3 : 0] <= readDataPacket.data.pack_data ;
 			stage <= ReadFIFO;
@@ -503,7 +507,7 @@ module  mkProc#(parameter ProcID procId) ( Proc );
           dumpType = Broadcast;
         end
         else begin 
-          // $display( "Packet (%d,%d) Receiving at Proc interface: %d ",packet.src, packet.dest,procId);
+          $display( "Packet (%d,%d) Inside at Proc interface:    %d ",packet.src, packet.dest,procId);
           dumpFIFOReadSrc <= fromInteger(i);
           dumpType = P2P;
         end
