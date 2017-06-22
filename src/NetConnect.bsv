@@ -79,7 +79,7 @@ module mkNetConnect(NetConnect);
     NoCArcId arc_id_netcon = lookupNoCArcId(datapacket.src, datapacket.dest, datapacket.data.pack_add);
     nocPacketOutQ.enq( NoCPacket { arcid: arc_id_netcon, payload: datapacket} );  
 
-    $display( "Packet (%d,%d) Sending at network interface:  %d, alloted arc_id is %d, for location %d ",datapacket.src, datapacket.dest, datapacket.src, arc_id_netcon, datapacket.data.pack_add );
+    $display( "Packet (%d,%d) Sending at network interface: %d,   for arc_id %d, loc %d ",datapacket.src, datapacket.dest, datapacket.src, arc_id_netcon, datapacket.data.pack_add );
 
   endrule
   
@@ -89,7 +89,7 @@ module mkNetConnect(NetConnect);
     nocPacketInQ.deq();
     let nocPacket = nocPacketInQ.first();
     dataPacketOutQ.enq( nocPacket.payload );
-    $display( "Packet (%d,%d) Receiving at network interface: %d, from arc_id %d, for locarion %d ",nocPacket.payload.src, nocPacket.payload.dest, nocPacket.payload.dest, nocPacket.arcid, nocPacket.payload.data.pack_add);
+    $display( "Packet (%d,%d) Receiving at network interface: %d, for arc_id %d, loc %d ",nocPacket.payload.src, nocPacket.payload.dest, nocPacket.payload.dest, nocPacket.arcid, nocPacket.payload.data.pack_add);
   endrule
   
   //Methods

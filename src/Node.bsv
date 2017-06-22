@@ -134,26 +134,36 @@ module mkNode#(NoCAddr2D thisRowAddr, NoCAddr2D thisColAddr )(Node);
   rule routePacketNorth (routePacketQ.notEmpty() && ( lookupArcDest( thisRowAddr, thisColAddr, routePacketQ.first().arcid ) == "N" ));
     routePacketQ.deq();
     channelOutQ[1].enq(routePacketQ.first());
-  endrule
+	let noc_packet = routePacketQ.first();
+    $display( "Packet (%d,%d) mesh location: (%d, %d),              for arc_id %d, loc %d , direction is N", noc_packet.payload.src, noc_packet.payload.dest, thisRowAddr, thisColAddr, noc_packet.arcid, noc_packet.payload.data.pack_add );
+	endrule
 
   rule routePacketSouth (routePacketQ.notEmpty() && ( lookupArcDest( thisRowAddr, thisColAddr, routePacketQ.first().arcid ) == "S" ));
     routePacketQ.deq();
     channelOutQ[2].enq(routePacketQ.first());
+	let noc_packet = routePacketQ.first();
+    $display( "Packet (%d,%d) mesh location: (%d, %d),              for arc_id %d, loc %d , direction is S", noc_packet.payload.src, noc_packet.payload.dest, thisRowAddr, thisColAddr, noc_packet.arcid, noc_packet.payload.data.pack_add );
   endrule
 
   rule routePacketWest (routePacketQ.notEmpty() && ( lookupArcDest( thisRowAddr, thisColAddr, routePacketQ.first().arcid ) == "W" ));
     routePacketQ.deq();
     channelOutQ[4].enq(routePacketQ.first());
+	let noc_packet = routePacketQ.first();
+    $display( "Packet (%d,%d) mesh location: (%d, %d),              for arc_id %d, loc %d , direction is W", noc_packet.payload.src, noc_packet.payload.dest, thisRowAddr, thisColAddr, noc_packet.arcid, noc_packet.payload.data.pack_add );
   endrule
 
   rule routePacketEast (routePacketQ.notEmpty() && ( lookupArcDest( thisRowAddr, thisColAddr, routePacketQ.first().arcid ) == "E" ));
     routePacketQ.deq();
     channelOutQ[3].enq(routePacketQ.first());
+	let noc_packet = routePacketQ.first();
+    $display( "Packet (%d,%d) mesh location: (%d, %d),              for arc_id %d, loc %d , direction is E", noc_packet.payload.src, noc_packet.payload.dest, thisRowAddr, thisColAddr, noc_packet.arcid, noc_packet.payload.data.pack_add );
   endrule
 
   rule routePacketHome (routePacketQ.notEmpty() && ( lookupArcDest( thisRowAddr, thisColAddr, routePacketQ.first().arcid ) == "H" ));
     routePacketQ.deq();
     channelOutQ[0].enq(routePacketQ.first());
+	let noc_packet = routePacketQ.first();
+    $display( "Packet (%d,%d) mesh location: (%d, %d),              for arc_id %d, loc %d , direction is H", noc_packet.payload.src, noc_packet.payload.dest, thisRowAddr, thisColAddr, noc_packet.arcid, noc_packet.payload.data.pack_add );
   endrule
 
 

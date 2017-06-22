@@ -1,8 +1,4 @@
 Proc: 5,Cycle:  77,Src: 5,Dest: 1,Sent
-Proc: 5,Cycle:  81,Src: 2,Dest: 5,Received
-Proc: 5,Cycle:  82,Src: 5,Dest: 6,Sent
-Proc: 5,Cycle:  86,Src: 4,Dest: 5,Received
-Proc: 5,Cycle: 154,Src: 5,Dest: 2,Sent
-Proc: 5,Cycle: 159,Src: 5,Dest: 4,Sent
-Proc: 5,Cycle: 160,Src: 1,Dest: 5,Received
-Proc: 5,Cycle: 163,Src: 6,Dest: 5,Received
+Proc: 5,Cycle:  82,Src: 2,Dest: 5,Received
+Proc: 5,Cycle:  85,Src: 2,Dest: 5,Received
+Proc: 5,Cycle:  98,Src: 5,Dest: 6,Sent

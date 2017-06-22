@@ -252,7 +252,7 @@ module  mkProc#(parameter ProcID procId) ( Proc );
        tagged StoreResp .st : return ?;
     endcase;
     
-    // $display ("Instruction is Executing in Proc %d and the inst is %x",procId,inst);
+    $display ("Instruction is Executing in Proc %d and the inst is %x",procId,inst);
     // Some abbreviations
     let sext = signExtend;
     let zext = zeroExtend;
@@ -315,7 +315,7 @@ module  mkProc#(parameter ProcID procId) ( Proc );
       end
 
       tagged FIFO_READ  .it :  begin
-        // $display("In Proc %d, Requesting Permission for fifo read from channel %d",procId,it.srcProc);        
+        $display("In Proc %d, Requesting Permission for fifo read from channel %d",procId,it.srcProc);        
         pendingFIFORead.enq(inst);
         next_stage = ReadFIFO;
       end
@@ -424,53 +424,57 @@ module  mkProc#(parameter ProcID procId) ( Proc );
     Rules nextRule = rules
 
       rule readFromFIFOi(stage == ReadFIFO && readFIFOArbiter.clients[i].grant);
-
         // wba( regDest, readDataPacket.data);
         // stage <= PCgen;
-
         let regDest = case ( pendingFIFORead.first() ) matches
           tagged FIFO_READ            .it: return it.rdst;
           tagged FIFO_READ_BROADCAST  .it: return it.rdst;
         endcase;
 
         pendingFIFORead.deq();
+
         dataPacketInQ[i].deq();
         DataPacket readDataPacket = dataPacketInQ[i].first();
-        fifoReadDestRindx[i] <= regDest;
-        fifoReadPacketCount[i] <= fifoReadPacketCount[i]+1 ;
 
-        let regloc = readDataPacket.data.pack_add;
-//        fifoReadDataReg[i][regloc*4+3 : regloc*4] <= readDataPacket.data.pack_data ;
-        fifoReadDataReg[i][3 : 0] <= readDataPacket.data.pack_data ;
+        fifoReadDestRindx[i] <= regDest;
+
+		if (fifoReadPacketCount[i] == 7) begin
+		    fifoReadPacketCount[i] <= 0 ;
+		    wba( fifoReadDestRindx[i], fifoReadDataReg[i]);
+		    stage <= PCgen;
+		end
+		else begin
+        	fifoReadPacketCount[i] <= fifoReadPacketCount[i]+1 ;
+        	fifoReadDataReg[i][3 : 0] <= readDataPacket.data.pack_data ;
+			stage <= ReadFIFO;
+//	        let regloc = readDataPacket.data.pack_add;
+//	        fifoReadDataReg[i][regloc*4+3 : regloc*4] <= readDataPacket.data.pack_data ;
+
+		end
         
       endrule
-
     endrules; 
     readFIFORuleSet = rJoinMutuallyExclusive(readFIFORuleSet,nextRule); 
   end 
-
   addRules(readFIFORuleSet);
-
-
 
   // ------------------------------------------------------------------------------------------------------------------------------------------- //
   // Set of rules to specify whenever a DataReg is full
   // Added for updated FIFO_READ Instruction
+
+  /*
   Rules fifoReadRuleSet = emptyRules;
   for (Integer i=0; i<valueof(NumNodes); i=i+1) begin
     Rules nextRule = rules
       rule fifotoDataRegi(stage == ReadFIFO && fifoReadPacketCount[i] == 8);
 
-        fifoReadPacketCount[i] <= 0 ;
-        wba( fifoReadDestRindx[i], fifoReadDataReg[i]);
-        stage <= PCgen;
  
       endrule
     endrules;
     fifoReadRuleSet = rJoinMutuallyExclusive(fifoReadRuleSet, nextRule);
   end
   addRules(fifoReadRuleSet);
-
+*/
 
   // ------------------------------------------------------------------------------------------------------------------------------------------- //
   // Rule to specify which FIFOQ to fill in. 
