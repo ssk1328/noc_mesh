@@ -150,6 +150,8 @@ module  mkProc#(parameter ProcID procId) ( Proc );
 
   Reg#(ProcID) dumpFIFOReadSrc   <- mkReg(0); //For remembering src of FIFO Read or dest of FIFO write so that dump rule can have access
   Reg#(ProcID) dumpFIFOWriteDest <- mkReg(0);
+  Reg#(PacketLocation) dumpFIFOWriteLoc <- mkReg(0);
+  Reg#(PacketLocation) dumpFIFOReadLoc <- mkReg(0);
   //FIFOF - means that it has notEmpty and notFull signals exposed in the interface
   //LFIFOF - L means that it has pipeline property, i.e. can be deq and enq on same cycle when full.
   //GLFIFOF -G means that its enq and deq guards can be specified. if deq is not guarded, the implicit conditions of deq not happening when Empty do not hold. You will have to manually check. This is useful when you have two FIFOs being deq in same rule, and you dont want implicit conditions to be applied blindly. Here (False, True) means enq is guarded as usual, but deq is not guarded. I have to explicitly ensure that deq is happening only when notEmpty.
@@ -380,13 +382,14 @@ module  mkProc#(parameter ProcID procId) ( Proc );
 
         dumpFIFOWriteDest <= fifoWriteDestProc;
         dumpFIFOWrite.enq(P2P);
-    
+        dumpFIFOWriteLoc <= fifoWriteCount;
+        
         if (fifoWriteCount == 7) begin
           fifoWriteCount <= 0;
           stage <= PCgen;
         end
         else begin
-              fifoWriteCount <= fifoWriteCount+1 ;
+          fifoWriteCount <= fifoWriteCount+1 ;
           stage <= FIFOWrite;
         end
         
@@ -511,6 +514,7 @@ module  mkProc#(parameter ProcID procId) ( Proc );
           $display( "Packet (%d,%d) Inside at Proc interface:    %d ",packet.src, packet.dest,procId);
           dumpFIFOReadSrc <= fromInteger(i);
           dumpType = P2P;
+          dumpFIFOReadLoc <= packet.data.pack_add;
         end
         dumpFIFORead.enq(dumpType); //Dump to File that FIFORead can happen now
 
@@ -554,8 +558,7 @@ module  mkProc#(parameter ProcID procId) ( Proc );
       else if (writeDumpPacketType == Broadcast) //One is P2P and other Bcast
         $fwrite(dumpFile, "Proc:%d,Cycle:%4d,Src:%d,Dest:%d,Received\nProc:%d,Cycle:%4d,Src:%d,Dest:%d,Sent Broadcast\n",procId,numCycles,dumpFIFOReadSrc,procId,procId,numCycles,procId,dumpFIFOWriteDest);
       else //Both P2P
-        $fwrite(dumpFile, "Proc:%d,Cycle:%4d,Src:%d,Dest:%d,Received\nProc:%d,Cycle:%4d,Src:%d,Dest:%d,Sent\n",procId,numCycles,dumpFIFOReadSrc,procId,procId,numCycles,procId,dumpFIFOWriteDest);
-      
+        $fwrite(dumpFile, "Proc:%d,Cycle:%4d,Src:%d,Dest:%d,Loc:%d,Received\nProc:%d,Cycle:%4d,Src:%d,Dest:%d,Loc:%d,Sent\n",procId,numCycles,dumpFIFOReadSrc,procId,dumpFIFOReadLoc,procId,numCycles,procId,dumpFIFOWriteDest,dumpFIFOWriteLoc); 
       dumpFIFORead.deq();
       dumpFIFOWrite.deq();
     end
@@ -566,7 +569,7 @@ module  mkProc#(parameter ProcID procId) ( Proc );
       if (readDumpPacketType == Broadcast) //if Bcast
         $fwrite(dumpFile, "Proc:%d,Cycle:%4d,Src:%d,Dest:%d,Received Broadcast\n",procId,numCycles,dumpFIFOReadSrc,procId);
       else  //if P2P
-        $fwrite(dumpFile, "Proc:%d,Cycle:%4d,Src:%d,Dest:%d,Received\n",procId,numCycles,dumpFIFOReadSrc,procId);
+        $fwrite(dumpFile, "Proc:%d,Cycle:%4d,Src:%d,Dest:%d,Loc:%d,Received\n",procId,numCycles,dumpFIFOReadSrc,procId,dumpFIFOReadLoc);
       dumpFIFORead.deq();
     end
 
@@ -575,7 +578,7 @@ module  mkProc#(parameter ProcID procId) ( Proc );
       if (writeDumpPacketType == Broadcast) //if Bcast
         $fwrite(dumpFile, "Proc:%d,Cycle:%4d,Src:%d,Dest:%d,Sent Broadcast\n",procId,numCycles,procId,dumpFIFOWriteDest);
       else  // if P2P
-        $fwrite(dumpFile, "Proc:%d,Cycle:%4d,Src:%d,Dest:%d,Sent\n",procId,numCycles,procId,dumpFIFOWriteDest);      
+        $fwrite(dumpFile, "Proc:%d,Cycle:%4d,Src:%d,Dest:%d,Loc:%d,Sent\n",procId,numCycles,procId,dumpFIFOWriteDest,dumpFIFOWriteLoc);
       dumpFIFOWrite.deq();
     end
     
