@@ -304,8 +304,6 @@ module  mkProc#(parameter ProcID procId) ( Proc );
       // -- FIFO Read and FIFO Write ops ------------------------------
       tagged FIFO_WRITE .it :  begin 
         // dataPacketOutFQ.enq( DataPacket { src:procId, dest:it.destProc, data:rf.rd1(it.rsrc), isBroadcast:False } );
-        dumpFIFOWriteDest <= it.destProc;
-        dumpFIFOWrite.enq(P2P);
         // $display( "Packet (%d,%d) Sending at Proc interface:  %d ",procId, it.destProc,procId);
         // $display ("Inst in Proc %d is FIFO_Write executing with written value",procId,rf.rd1(it.rsrc));
         fifoWriteCount <= 0 ;
@@ -319,7 +317,7 @@ module  mkProc#(parameter ProcID procId) ( Proc );
         pendingFIFORead.enq(inst);
         next_stage = ReadFIFO;
       end
-	  /* -----\/----- EXCLUDED -----\/-----
+    /* -----\/----- EXCLUDED -----\/-----
 
       // -- For implementing Broadcast in the FIFO Read and FIFO Write --------------------
       tagged FIFO_WRITE_BROADCAST .it :  begin 
@@ -335,7 +333,7 @@ module  mkProc#(parameter ProcID procId) ( Proc );
         next_stage = ReadFIFO;
       end
 
-	   -----/\----- EXCLUDED -----/\----- */
+     -----/\----- EXCLUDED -----/\----- */
   
       tagged HALT .it : begin
         next_pc = pc;
@@ -379,15 +377,18 @@ module  mkProc#(parameter ProcID procId) ( Proc );
 
         dataPacketOutFQ.enq( DataPacket { src:procId, dest:fifoWriteDestProc, data:payload32, isBroadcast:False } );
         // dataPacketOutFQ.enq( DataPacket { src:procId, dest:it.destProc, data:rf.rd1(it.rsrc), isBroadcast:False } );
-		
-		if (fifoWriteCount == 7) begin
-			fifoWriteCount <= 0;
-			stage <= PCgen;
-		end
-		else begin
-        	fifoWriteCount <= fifoWriteCount+1 ;
-			stage <= FIFOWrite;
-		end
+
+        dumpFIFOWriteDest <= fifoWriteDestProc;
+        dumpFIFOWrite.enq(P2P);
+    
+        if (fifoWriteCount == 7) begin
+          fifoWriteCount <= 0;
+          stage <= PCgen;
+        end
+        else begin
+              fifoWriteCount <= fifoWriteCount+1 ;
+          stage <= FIFOWrite;
+        end
         
       endrule
 
@@ -397,8 +398,8 @@ module  mkProc#(parameter ProcID procId) ( Proc );
 
   addRules(fifoWriteRuleSet);
 
-	//  rule fifoWriteRuleLast(stage == FIFOWrite && fifoWriteCount == fromInteger(7) );
-	//  endrule
+  //  rule fifoWriteRuleLast(stage == FIFOWrite && fifoWriteCount == fromInteger(7) );
+  //  endrule
 
   // ------------------------------------------------------------------------------------------------------------------------------------------- //
   // Rule to specify which FIFOQ to read from . Arbiter used to prevent deq causing implicit conditions of FIFO being notEmpty being enforced on all the queues.
@@ -435,26 +436,26 @@ module  mkProc#(parameter ProcID procId) ( Proc );
         DataPacket readDataPacket = dataPacketInQ[i].first();
 
         fifoReadDestRindx[i] <= regDest;
-    	
-		$display( "Packet (%d,%d) In FIFO_READ Instruction: reading from %d, Packet count is %d loc is %d ", readDataPacket.src, readDataPacket.dest, i, fifoReadPacketCount[i], readDataPacket.data.pack_add);
+      
+    $display( "Packet (%d,%d) In FIFO_READ Instruction: reading from %d, Packet count is %d loc is %d ", readDataPacket.src, readDataPacket.dest, i, fifoReadPacketCount[i], readDataPacket.data.pack_add);
 
-		if (fifoReadPacketCount[i] == 7) begin
-			$display("In Proc %d, ifpartloop ", procId);
-		    fifoReadPacketCount[i] <= 0 ;
-		    wba( fifoReadDestRindx[i], fifoReadDataReg[i]);
-		    stage <= PCgen;
-        	pendingFIFORead.deq();
+    if (fifoReadPacketCount[i] == 7) begin
+      $display("In Proc %d, ifpartloop ", procId);
+        fifoReadPacketCount[i] <= 0 ;
+        wba( fifoReadDestRindx[i], fifoReadDataReg[i]);
+        stage <= PCgen;
+          pendingFIFORead.deq();
 
-		end
-		else begin
-			$display("In Proc %d, elsepartloop ", procId );
-        	fifoReadPacketCount[i] <= fifoReadPacketCount[i]+1 ;
-        	fifoReadDataReg[i][3 : 0] <= readDataPacket.data.pack_data ;
-			stage <= ReadFIFO;
-//	        let regloc = readDataPacket.data.pack_add;
-//	        fifoReadDataReg[i][regloc*4+3 : regloc*4] <= readDataPacket.data.pack_data ;
+    end
+    else begin
+      $display("In Proc %d, elsepartloop ", procId );
+          fifoReadPacketCount[i] <= fifoReadPacketCount[i]+1 ;
+          fifoReadDataReg[i][3 : 0] <= readDataPacket.data.pack_data ;
+      stage <= ReadFIFO;
+//          let regloc = readDataPacket.data.pack_add;
+//          fifoReadDataReg[i][regloc*4+3 : regloc*4] <= readDataPacket.data.pack_data ;
 
-		end
+    end
         
       endrule
     endrules; 
