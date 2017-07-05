@@ -25,9 +25,12 @@ if len(sys.argv) >= 2:
         reportFileName = "reportSim_mcf.txt"
 
     elif sys.argv[1] == "xy":
-
         dumpFileName = "proc_xy/proc_dump_"
-        reportFileName = "reportSimP_xy.txt"
+        reportFileName = "reportSim_xy.txt"
+
+    elif sys.argv[1] == "mct":
+        dumpFileName = "proc_mct/proc_dump_"
+        reportFileName = "reportSim_mct.txt"
 
     else :
         print "Specify argument 'mcf' or 'xy'\n "
@@ -161,7 +164,7 @@ reportFile.write("Total Cycles in Flight for all Packets - "+str(totalCycles)+"\
 reportFile.write("###########################################\n")
     
 reportFile.write("\n\n###########################################\n")
-reportFile.write("Average number of Cycles in Flight for all Packets - "+str(float(totalCycles/len(packetTable)))+"\n");
+reportFile.write("Average number of Cycles in Flight for all Packets - "+str(float(totalCycles)/len(packetTable))+"\n");
 reportFile.write("###########################################\n")
     
 

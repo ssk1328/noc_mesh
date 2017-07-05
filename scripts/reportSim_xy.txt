@@ -234,5 +234,5 @@ Total Cycles in Flight for all Packets - 4451
 
 
 ###########################################
-Average number of Cycles in Flight for all Packets - 19.0
+Average number of Cycles in Flight for all Packets - 19.8705357143
 ###########################################
