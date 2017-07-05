@@ -7,7 +7,7 @@ This is a implementation of 3x3 mesh type Network on Chip, with total 7 processi
 # Dependencies
 - Bluespec 
 - Python 
-- src/Lookup.bsv from \bsv folder in git repo https://github.com/ssk1328/mcmf
+- src/Lookup.bsv from /bsv folder in git repo https://github.com/ssk1328/mcmf
 
 # Using Bluespec 
 - Run this on machine with bluespec installed (hpc28)
